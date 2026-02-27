@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Brand Colors */
+  --color-primary: #141F40;
+  /* Blue */
+  --color-secondary: #06B6D4;
+  /* Cyan/Teal */
+  --color-accent: #F97316;
+  /* Orange */
+
+  /* Neutral Colors */
+  --color-bg-body: #FFFFFF;
+  --color-bg-alt: #F9FAFB;
+  --color-text-main: #1F2937;
+  /* Gray 800 */
+  --color-text-muted: #6B7280;
+  /* Gray 500 */
+  --color-text-light: #F3F4F6;
+  /* Gray 100 */
+
+  /* Fonts */
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-body: 'Montserrat', sans-serif, 'Inter', system-ui, -apple-system;
+  --font-heading: 'Montserrat', sans-serif, 'Poppins', system-ui, -apple-system;
+}
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+  --color-bg-body: var(--color-bg-body);
+  --color-bg-alt: var(--color-bg-alt);
+  --color-text-main: var(--color-text-main);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-light: var(--color-text-light);
+
+  --font-montserrat: var(--font-montserrat);
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-heading);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text-main);
+  background-color: var(--color-bg-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+
+/* Accessibility Modes */
+html.high-contrast {
+  --color-primary: #0000AA;
+  --color-secondary: #006666;
+  --color-accent: #CC5500;
+  --color-bg-body: #FFFFFF;
+  --color-bg-alt: #EFEFEF;
+  --color-text-main: #000000;
+  --color-text-muted: #222222;
+  --color-text-light: #DDDDDD;
+}
+
+html.font-large {
+  font-size: 110%;
+}
+
+html.font-xl {
+  font-size: 125%;
+}

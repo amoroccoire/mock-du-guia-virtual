@@ -1,0 +1,82 @@
+[
+    {
+        "id": "defensoria",
+        "title": "DEFENSORÍA UNIVERSITARIA",
+        "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "contact": {
+            "email": "defensoria@unsa.edu.pe",
+            "address": "Edificio Central, Piso 2",
+            "addressMapUrl": "https://maps.google.com",
+            "phone": "+51 54 123456",
+            "phoneExtension": "5678",
+            "responsible": "Dr. María Gonzales",
+            "responsibleRole": "Defensora Universitaria"
+        },
+        "image": "https://placehold.co/600x400/06B6D4/FFFFFF?text=Defensoria",
+        "locationText": "Pabellón Administrativo"
+    },
+    {
+        "id": "bienestar",
+        "title": "OFICINA DE BIENESTAR UNIVERSITARIO",
+        "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "contact": {
+            "email": "bienestar@unsa.edu.pe",
+            "address": "Calle Santa Catalina 117",
+            "addressMapUrl": "https://maps.google.com",
+            "phone": "+51 54 215100",
+            "phoneExtension": "1234",
+            "responsible": "Mg. Juan Pérez López",
+            "responsibleRole": "Jefe de la Oficina"
+        },
+        "image": "https://placehold.co/600x400/141F40/FFFFFF?text=Bienestar+Universitario",
+        "locationText": "Ubicación en Campus"
+    },
+    {
+        "id": "biblioteca",
+        "title": "BIBLIOTECA CENTRAL",
+        "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "contact": {
+            "email": "biblioteca@unsa.edu.pe",
+            "address": "Av. Independencia s/n",
+            "addressMapUrl": "https://maps.google.com",
+            "phone": "+51 54 987654",
+            "phoneExtension": "9012",
+            "responsible": "Lic. Carlos Ruiz",
+            "responsibleRole": "Director"
+        },
+        "image": "https://placehold.co/600x400/F97316/FFFFFF?text=Biblioteca",
+        "locationText": "Campus Ingenierías"
+    },
+    {
+        "id": "comedor",
+        "title": "COMEDOR UNIVERSITARIO",
+        "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "contact": {
+            "email": "comedor@unsa.edu.pe",
+            "address": "Av. Venezuela s/n",
+            "addressMapUrl": "https://maps.google.com",
+            "phone": "+51 54 456789",
+            "phoneExtension": "3456",
+            "responsible": "Ing. Ana Torres",
+            "responsibleRole": "Administradora"
+        },
+        "image": "https://placehold.co/600x400/1F2937/FFFFFF?text=Comedor",
+        "locationText": "Campus Social"
+    },
+    {
+        "id": "Otro",
+        "title": "OTRO SERVICIO",
+        "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "contact": {
+            "email": "comedor@unsa.edu.pe",
+            "address": "Av. Venezuela s/n",
+            "addressMapUrl": "https://maps.google.com",
+            "phone": "+51 54 456789",
+            "phoneExtension": "3456",
+            "responsible": "Ing. Ana Torres",
+            "responsibleRole": "Administradora"
+        },
+        "image": "https://placehold.co/600x400/1F2937/FFFFFF?text=Comedor",
+        "locationText": "Campus Social"
+    }
+]
