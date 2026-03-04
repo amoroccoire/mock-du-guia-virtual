@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main] # Update to your branch name if necessary
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,7 +14,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install, build, and upload
-        uses: withastro/action@v3
+      - uses: actions/checkout@v4
+      - uses: withastro/action@v3 # Builds and prepares the site for deployment
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4 # Deploys the artifact to GitHub Pages
