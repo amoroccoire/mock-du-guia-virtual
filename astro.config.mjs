@@ -9,5 +9,5 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
   site: 'https://amoroccoire.github.io',
-  base: '/mock-du-guia-virtual',
+  base: process.env.NODE_ENV === 'production' ? '/mock-du-guia-virtual' : '/',
 });
