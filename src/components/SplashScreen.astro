@@ -1,5 +1,7 @@
 ---
-
+import { Image } from "astro:assets";
+import unsaLogo from "../assets/UNSA_SIN_FONDO.png";
+import duLogo from "../assets/imagotipo_du_black.png";
 ---
 
 <div id="splash-screen" class="splash-container">
@@ -7,11 +9,7 @@
         <div class="logos-wrapper">
             <!-- Logo Izquierdo: UNSA -->
             <div class="logo-container">
-                <img
-                    src="/UNSA_SIN_FONDO.png"
-                    alt="Logo UNSA"
-                    class="logo-img"
-                />
+                <Image src={unsaLogo} alt="Logo UNSA" class="logo-img" />
                 <span class="logo-text"
                     >UNIVERSIDAD NACIONAL<br />DE SAN AGUSTÍN</span
                 >
@@ -24,8 +22,8 @@
 
             <!-- Logo Derecho: Oficina -->
             <div class="logo-container">
-                <img
-                    src="/imagotipo_du_black.png"
+                <Image
+                    src={duLogo}
                     alt="Logo Defensoria Universitaria"
                     class="logo-img"
                 />
