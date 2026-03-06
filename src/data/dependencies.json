@@ -1,21 +1,5 @@
 [
     {
-        "id": "Otro",
-        "title": "OTRO SERVICIO",
-        "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        "contact": {
-            "email": "comedor@unsa.edu.pe",
-            "address": "Av. Venezuela s/n",
-            "addressMapUrl": "https://maps.google.com",
-            "phone": "+51 54 456789",
-            "phoneExtension": "3456",
-            "responsible": "Ing. Ana Torres",
-            "responsibleRole": "Administradora"
-        },
-        "image": "https://placehold.co/600x400/1F2937/FFFFFF?text=Comedor",
-        "locationText": "Campus Social"
-    },
-    {
         "id": "defensoria",
         "title": "DEFENSORÍA UNIVERSITARIA",
         "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
@@ -30,6 +14,22 @@
         },
         "image": "https://placehold.co/600x400/06B6D4/FFFFFF?text=Defensoria",
         "locationText": "Pabellón Administrativo"
+    },
+    {
+        "id": "Otro",
+        "title": "OTRO SERVICIO",
+        "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "contact": {
+            "email": "comedor@unsa.edu.pe",
+            "address": "Av. Venezuela s/n",
+            "addressMapUrl": "https://maps.google.com",
+            "phone": "+51 54 456789",
+            "phoneExtension": "3456",
+            "responsible": "Ing. Ana Torres",
+            "responsibleRole": "Administradora"
+        },
+        "image": "https://placehold.co/600x400/1F2937/FFFFFF?text=Comedor",
+        "locationText": "Campus Social"
     },
     {
         "id": "bienestar",
