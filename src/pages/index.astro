@@ -2,12 +2,14 @@
 import dependencies from "../data/dependencies.json";
 import Layout from "../layouts/Layout.astro";
 import SplashScreen from "../components/SplashScreen.astro";
+import Header from "../components/Header.astro";
 ---
 
 <Layout title="Guia virtual - UNSA">
 	<SplashScreen />
+	<Header />
 	<div
-		class="relative min-h-[calc(100vh-80px)] bg-[#8C0712] text-primary overflow-hidden font-body selection:bg-secondary selection:text-white flex flex-col"
+		class="relative min-h-[calc(100vh-80px)] bg-[#D9A86C] text-primary overflow-hidden font-body selection:bg-secondary selection:text-white flex flex-col"
 	>
 		<div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
 			<div
@@ -39,7 +41,7 @@ import SplashScreen from "../components/SplashScreen.astro";
 								id="dep-video"
 								class="absolute inset-0 w-full h-full object-cover"
 								referrerpolicy="strict-origin-when-cross-origin"
-								src={dependencies[0].video}
+								src={`${dependencies[0].video}?autoplay=1&mute=1`}
 								title="Video de la dependencia"
 								frameborder="0"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -370,7 +372,10 @@ import SplashScreen from "../components/SplashScreen.astro";
 				titleEl.textContent = data.title;
 				indicatorEl.textContent = `${index + 1}/${dependencies.length} ${data.title}`;
 
-				videoEl.src = data.video;
+				const videoUrl = new URL(data.video);
+				videoUrl.searchParams.set("autoplay", "1");
+				videoUrl.searchParams.set("mute", "1");
+				videoEl.src = videoUrl.toString();
 				emailEl.textContent = data.contact.email;
 				emailEl.href = `mailto:${data.contact.email}`;
 				addressEl.textContent = data.contact.address;

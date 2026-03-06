@@ -1,0 +1,100 @@
+---
+import { Image } from "astro:assets";
+import unsaLogo from "../assets/UNSA_SIN_FONDO.png";
+import duLogo from "../assets/imagotipo_du_black.png";
+---
+
+<header
+    id="main-header"
+    class="sticky top-0 z-50 w-full h-[60px] bg-[#D9A86C] border-b-[1px] border-[#c9a84c]/30 flex items-center px-4 md:px-6 lg:px-8 font-montserrat transition-transform duration-300"
+>
+    <!-- Contenedor Principal Lado Izquierdo -->
+    <div class="flex items-center h-full">
+        <!-- Logo 1: UNSA -->
+        <div class="flex items-center gap-3">
+            <div
+                class="w-[50px] h-[50px] rounded-full bg-[#0d1b2a] border border-[#c9a84c] flex items-center justify-center shrink-0 p-1 shadow-sm"
+            >
+                <Image
+                    src={unsaLogo}
+                    alt="Logo UNSA"
+                    class="w-full h-full object-contain"
+                />
+            </div>
+            <!-- Textos (ocultos en móvil, visibles desde md: 768px+) -->
+            <div class="hidden md:flex flex-col justify-center">
+                <span
+                    class="text-[#0d1b2a] font-bold text-[12px] tracking-[0.15em] uppercase leading-tight"
+                >
+                    UNSA
+                </span>
+                <span
+                    class="text-gray-500 text-[10px] font-montserrat font-semibold leading-tight mt-0.5"
+                >
+                    Universidad Nacional<br />de San Agustín
+                </span>
+            </div>
+        </div>
+
+        <!-- Separador -->
+        <div
+            class="w-[1px] h-[28px] bg-[#c9a84c] opacity-40 mx-4 md:mx-6 shrink-0"
+        >
+        </div>
+
+        <!-- Logo 2: DU -->
+        <div class="flex items-center gap-3">
+            <div
+                class="w-[40px] h-[40px] rounded-full bg-[#0d1b2a] border border-[#c9a84c] flex items-center justify-center shrink-0 p-1.5 shadow-sm"
+            >
+                <!-- Se invierte para que se vea blanco sobre el fondo navy -->
+                <Image
+                    src={duLogo}
+                    alt="Logo Defensoría Universitaria"
+                    class="w-full h-full object-contain brightness-0 invert"
+                />
+            </div>
+            <!-- Textos (ocultos en móvil, visibles desde md: 768px+) -->
+            <div class="hidden md:flex flex-col justify-center">
+                <span
+                    class="text-[#0d1b2a] font-bold text-[12px] tracking-[0.15em] uppercase leading-tight"
+                >
+                    DU
+                </span>
+                <span
+                    class="text-gray-500 text-[10px] font-montserrat font-semibold leading-tight mt-0.5"
+                >
+                    Defensoría<br />Universitaria
+                </span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const header = document.getElementById("main-header");
+        if (!header) return;
+
+        let lastScroll = 0;
+
+        window.addEventListener("scroll", () => {
+            const currentScroll = window.scrollY;
+
+            // Si estamos en la parte superior, mostramos el header
+            if (currentScroll <= 0) {
+                header.classList.remove("-translate-y-full");
+            }
+            // Si hacemos scroll hacia abajo, ocultamos el header
+            else if (currentScroll > lastScroll) {
+                header.classList.add("-translate-y-full");
+            }
+            // Si hacemos scroll hacia arriba, mostramos el header
+            else {
+                header.classList.remove("-translate-y-full");
+            }
+
+            lastScroll = currentScroll;
+        });
+    });
+</script>
