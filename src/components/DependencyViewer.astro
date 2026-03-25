@@ -1,7 +1,9 @@
 ---
-import dependencies from "../data/dependencies.json";
+import { getOficinas } from "../lib/data";
 import VideoPanel from "./VideoPanel.astro";
 import InfoPanel from "./InfoPanel.astro";
+
+const oficinas = await getOficinas();
 ---
 
 <div
@@ -19,110 +21,97 @@ import InfoPanel from "./InfoPanel.astro";
     </div>
 
     <main
-        class="w-full mx-auto px-1 lg:px-12 py-6 lg:py-10 relative z-10 grow flex flex-col justify-center transition-opacity duration-500 ease-in-out opacity-0"
+        class="w-full mx-auto px-1 lg:px-12 py-6 lg:py-10 relative z-10 grow flex flex-col justify-center transition-opacity duration-500 ease-in-out opacity-100"
         id="main-container"
     >
         <div
             class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-5 lg:gap-8 h-full items-stretch"
         >
-            <VideoPanel videoUrl={dependencies[0].video} />
-            <InfoPanel dependencies={dependencies} />
+            <VideoPanel videoUrl={oficinas[0]?.video || ""} />
+            <InfoPanel dependencies={oficinas} />
         </div>
     </main>
 </div>
 
-<script define:vars={{ dependencies }}>
+<script define:vars={{ oficinas }}>
     document.addEventListener("DOMContentLoaded", () => {
+        let currentDepIndex = 0;
+        let currentProfileIndex = 0;
+
         const mainContainer = document.getElementById("main-container");
         const leftPanel = document.getElementById("left-panel");
         const rightPanel = document.getElementById("right-panel");
-
-        // Elementos del DOM a actualizar
-        const titleEl = document.getElementById("dep-title");
-        const logoEl = document.getElementById("dep-logo");
         const indicatorEl = document.getElementById("nav-indicator");
-        const videoEl = document.getElementById("dep-video");
-        const emailEl = document.getElementById("dep-email");
-        const addressEl = document.getElementById("dep-address");
-        const phoneEl = document.getElementById("dep-phone");
-        const extensionEl = document.getElementById("dep-extension");
-        const responsibleEl = document.getElementById("dep-responsible");
-        const roleEl = document.getElementById("dep-role");
-        const imageEl = document.getElementById("dep-image");
-        const locationTextEl = document.getElementById("dep-location-text");
         const dots = document.querySelectorAll("[data-dot]");
-
-        // Botones de navegación
         const prevBtn = document.getElementById("prev-btn");
         const nextBtn = document.getElementById("next-btn");
 
-        let currentIndex = 0;
-
-        // Initial Fade In
+        // Animación Inicial (Fade In / Slide)
         setTimeout(() => {
-            if (mainContainer) mainContainer.classList.remove("opacity-0");
+            if (mainContainer) {
+                mainContainer.classList.remove("opacity-0");
+                mainContainer.classList.add("opacity-100");
+            }
             if (leftPanel) leftPanel.classList.add("animate-slide-in-left");
             if (rightPanel) rightPanel.classList.add("animate-slide-in-right");
         }, 100);
 
-        const updateUI = (index) => {
-            const data = dependencies[index];
+        // Función global para cambiar la dependencia (Úsala con tus botones o carrusel)
+        window.changeDependency = (index) => {
+            currentDepIndex = index;
+            currentProfileIndex = 0; // Resetea a la primera pestaña al cambiar de unidad
 
             // 1. Animación de salida (Fade Out suave)
             if (leftPanel) leftPanel.classList.add("opacity-50");
             if (rightPanel) rightPanel.classList.add("opacity-50");
 
             setTimeout(() => {
-                // 2. Actualizar Datos
+                // 2. Actualizar la Interfaz con los nuevos datos
+                updateGlobalUI();
 
-                // Toggle logo o título
-                if (data.logo) {
-                    if (logoEl) {
-                        logoEl.src = data.logo;
-                        logoEl.alt = data.title;
-                        logoEl.classList.remove("hidden");
-                    }
-                    if (titleEl) titleEl.classList.add("hidden");
-                } else {
-                    if (logoEl) logoEl.classList.add("hidden");
-                    if (titleEl) {
-                        titleEl.textContent = data.title;
-                        titleEl.classList.remove("hidden");
-                    }
-                }
+                // 3. Animación de entrada (Fade In)
+                if (leftPanel) leftPanel.classList.remove("opacity-50");
+                if (rightPanel) rightPanel.classList.remove("opacity-50");
+            }, 250);
+        };
 
-                if (indicatorEl)
-                    indicatorEl.textContent = `${index + 1}/${dependencies.length} ${data.title}`;
+        // Función global para cambiar la pestaña interna (Sub-área)
+        window.changeProfile = (profIndex) => {
+            currentProfileIndex = profIndex;
+            updateProfileUI();
+        };
 
-                if (videoEl && data.video) {
-                    try {
-                        const videoUrl = new URL(data.video);
-                        videoUrl.searchParams.set("autoplay", "1");
-                        videoUrl.searchParams.set("mute", "1");
-                        videoEl.src = videoUrl.toString();
-                    } catch (e) {
-                        videoEl.src = `${data.video}?autoplay=1&mute=1`;
-                    }
-                }
+        function updateGlobalUI() {
+            if (!dependencies || dependencies.length === 0) return;
+            const dep = dependencies[currentDepIndex];
 
-                if (emailEl) {
-                    emailEl.textContent = data.contact.email;
-                    emailEl.href = `mailto:${data.contact.email}`;
-                }
-                if (addressEl) addressEl.textContent = data.contact.address;
-                if (phoneEl) phoneEl.textContent = data.contact.phone;
-                if (extensionEl)
-                    extensionEl.textContent = data.contact.phoneExtension;
-                if (responsibleEl)
-                    responsibleEl.textContent = data.contact.responsible;
-                if (roleEl) roleEl.textContent = data.contact.responsibleRole;
-                if (imageEl) imageEl.src = data.image;
-                if (locationTextEl)
-                    locationTextEl.textContent = data.locationText;
+            // Textos de Cabecera (Se mantienen fijos por ID)
+            const titleEl = document.getElementById("dep-title");
+            if (titleEl) titleEl.textContent = dep.titulo || "";
 
+            const respEl = document.getElementById("dep-resp-gral");
+            if (respEl) respEl.textContent = dep.responsableGral || "";
+
+            const cargoEl = document.getElementById("dep-cargo-gral");
+            if (cargoEl) cargoEl.textContent = dep.cargoGral || "";
+
+            const emailEl = document.getElementById("dep-email-gral");
+            if (emailEl)
+                emailEl.textContent = dep.emailGral ? `✉ ${dep.emailGral}` : "";
+
+            // Video Iframe
+            const iframe = document.getElementById("dep-video");
+            if (iframe && dep.video)
+                iframe.src = `${dep.video}?autoplay=1&mute=1`;
+
+            // Actualizamos los puntos de navegación (dots) y el indicador textual
+            if (indicatorEl) {
+                indicatorEl.textContent = `${currentDepIndex + 1}/${dependencies.length} ${dep.titulo}`;
+            }
+
+            if (dots.length > 0) {
                 dots.forEach((dot, i) => {
-                    if (i === index) {
-                        // Activamos la barrita
+                    if (i === currentDepIndex) {
                         dot.classList.add("bg-white");
                         dot.classList.remove(
                             "bg-transparent",
@@ -130,7 +119,6 @@ import InfoPanel from "./InfoPanel.astro";
                             "border-gray-400",
                         );
                     } else {
-                        // Desactivamos las otras
                         dot.classList.remove("bg-white");
                         dot.classList.add(
                             "bg-transparent",
@@ -139,39 +127,102 @@ import InfoPanel from "./InfoPanel.astro";
                         );
                     }
                 });
+            }
 
-                // Emitir evento para actualizar redes sociales
-                const event = new CustomEvent("updateSocialMedia", {
-                    detail: { networks: data.socialMedia || [] },
-                });
-                document.dispatchEvent(event);
+            updateProfileUI();
+        }
 
-                // 3. Animación de entrada
-                if (leftPanel) leftPanel.classList.remove("opacity-50");
-                if (rightPanel) rightPanel.classList.remove("opacity-50");
-            }, 250);
-        };
+        function updateProfileUI() {
+            if (!dependencies || dependencies.length === 0) return;
+            const dep = dependencies[currentDepIndex];
+            const profile = dep.perfiles[currentProfileIndex];
+            if (!profile) return;
 
-        // Event Listeners para navegación
+            // 1. TABS: Mostrar botones solo si hay más de 1 perfil
+            const tabsContainer = document.getElementById("dep-tabs-container");
+            if (tabsContainer) {
+                if (dep.perfiles.length > 1) {
+                    tabsContainer.innerHTML = dep.perfiles
+                        .map((p, idx) => {
+                            const isActive = idx === currentProfileIndex;
+                            const btnClass = isActive
+                                ? "bg-secondary text-white border-secondary"
+                                : "bg-transparent text-white/60 border-white/20 hover:bg-white/10 hover:text-white";
+                            // Usa subArea si existe, si no, usa la audiencia
+                            const label = p.subArea ? p.subArea : p.audiencia;
+                            return `<button onclick="window.changeProfile(${idx})" class="px-2 py-1 text-xs font-semibold rounded-sm border transition-all ${btnClass}">${label}</button>`;
+                        })
+                        .join("");
+                    tabsContainer.classList.remove("hidden");
+                } else {
+                    tabsContainer.innerHTML = "";
+                    tabsContainer.classList.add("hidden");
+                }
+            }
+
+            // 2. LOGO: El logo puede variar por sub-área
+            const logoEl = document.getElementById("dep-logo");
+            if (logoEl) {
+                if (profile.logo) {
+                    logoEl.src = profile.logo;
+                    logoEl.classList.remove("hidden");
+                } else {
+                    logoEl.classList.add("hidden");
+                }
+            }
+
+            // 3. TELÉFONOS
+            const telContainer = document.getElementById("dep-phones");
+            if (telContainer) {
+                if (profile.telefonos && profile.telefonos.length > 0) {
+                    telContainer.innerHTML = profile.telefonos
+                        .map((t) => `<p>${t}</p>`)
+                        .join("");
+                    telContainer.parentElement.classList.remove("hidden");
+                } else {
+                    telContainer.parentElement.classList.add("hidden");
+                }
+            }
+
+            // 4. CROQUIS Y UBICACIÓN
+            const imageEl = document.getElementById("dep-image");
+            if (imageEl && profile.croquis && profile.croquis.length > 0) {
+                imageEl.src = profile.croquis[0];
+            }
+
+            const locEl = document.getElementById("dep-location-text");
+            if (locEl) locEl.textContent = profile.ubicacion || "";
+
+            // 5. EMITIR EVENTO DE REDES SOCIALES
+            // Si tienes tu componente SocialMediaFloating escuchando este evento:
+            const event = new CustomEvent("updateSocialMedia", {
+                detail: { networks: profile.redes || [] },
+            });
+            document.dispatchEvent(event);
+        }
+
+        // Event Listeners para navegación principal (Botones Prev / Next)
         if (prevBtn) {
             prevBtn.addEventListener("click", () => {
-                currentIndex =
-                    currentIndex === 0
+                const newIndex =
+                    currentDepIndex === 0
                         ? dependencies.length - 1
-                        : currentIndex - 1;
-                updateUI(currentIndex);
+                        : currentDepIndex - 1;
+                window.changeDependency(newIndex);
             });
         }
 
         if (nextBtn) {
             nextBtn.addEventListener("click", () => {
-                currentIndex =
-                    currentIndex === dependencies.length - 1
+                const newIndex =
+                    currentDepIndex === dependencies.length - 1
                         ? 0
-                        : currentIndex + 1;
-                updateUI(currentIndex);
+                        : currentDepIndex + 1;
+                window.changeDependency(newIndex);
             });
         }
+
+        updateGlobalUI();
     });
 </script>
 
