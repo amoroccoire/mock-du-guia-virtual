@@ -4,39 +4,59 @@ import unsaLogo from "../assets/UNSA_SIN_FONDO.png";
 import duLogo from "../assets/imagotipo_du_black.png";
 ---
 
-<div id="splash-screen" class="splash-container">
-    <div class="splash-content">
-        <div class="logos-wrapper">
+<div
+    id="splash-screen"
+    class="fixed top-0 left-0 w-screen h-screen bg-[#8c0712] z-[99999] flex flex-col justify-center items-center text-[#c9a84c] font-['Montserrat',system-ui,sans-serif] transition-opacity duration-500 ease-in-out"
+>
+    <div class="flex flex-col items-center gap-12">
+        <div class="flex items-stretch justify-center gap-6 sm:gap-12">
             <!-- Logo Izquierdo: UNSA -->
-            <div class="logo-container">
-                <Image src={unsaLogo} alt="Logo UNSA" class="logo-img" />
-                <span class="logo-text"
+            <div
+                class="logo-container flex flex-col items-center gap-5 opacity-0 translate-y-5"
+            >
+                <Image
+                    src={unsaLogo}
+                    alt="Logo UNSA"
+                    class="w-[70px] h-[70px] sm:w-[100px] sm:h-[100px] object-contain"
+                />
+                <span
+                    class="text-[0.6rem] sm:text-[0.8rem] uppercase tracking-[0.15em] text-center leading-[1.5] font-extrabold"
                     >UNIVERSIDAD NACIONAL<br />DE SAN AGUSTÍN</span
                 >
             </div>
 
             <!-- Separador -->
-            <div class="separator-container">
-                <div class="separator-line"></div>
+            <div class="flex justify-center items-center w-[2px]">
+                <div class="separator-line w-[1px] h-0 bg-[#c9a84c] opacity-60">
+                </div>
             </div>
 
             <!-- Logo Derecho: Oficina -->
-            <div class="logo-container">
+            <div
+                class="logo-container flex flex-col items-center gap-5 opacity-0 translate-y-5"
+            >
                 <Image
                     src={duLogo}
                     alt="Logo Defensoria Universitaria"
-                    class="logo-img"
+                    class="w-[70px] h-[70px] sm:w-[100px] sm:h-[100px] object-contain"
                 />
-                <span class="logo-text">DEFENSORIA<br />UNIVERSITARIA</span>
+                <span
+                    class="text-[0.6rem] sm:text-[0.8rem] uppercase tracking-[0.15em] text-center leading-[1.5] font-extrabold"
+                    >DEFENSORIA<br />UNIVERSITARIA</span
+                >
             </div>
         </div>
 
         <!-- Tagline -->
-        <div class="tagline">Te escuchamos y te orientamos</div>
+        <div
+            class="tagline text-[0.6rem] sm:text-[0.75rem] tracking-[0.25em] opacity-0 uppercase text-[#c9a84c]/70 mt-4 font-semibold text-center px-4 sm:px-0"
+        >
+            Te escuchamos y te orientamos
+        </div>
     </div>
 
-    <div class="progress-bar-container">
-        <div class="progress-bar"></div>
+    <div class="absolute bottom-0 left-0 w-full h-[3px] bg-[#c9a84c]/15">
+        <div class="progress-bar h-full w-0 bg-[#c9a84c]"></div>
     </div>
 </div>
 
@@ -46,118 +66,18 @@ import duLogo from "../assets/imagotipo_du_black.png";
         overflow: hidden !important;
     }
 
-    /* Base Container */
-    .splash-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: #8c0712; /* Navy oscuro */
-        z-index: 99999;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: #c9a84c; /* Dorado */
-        font-family: "Montserrat", system-ui, sans-serif;
-        transition: opacity 0.5s ease-in-out;
-    }
-
-    .splash-container.hide {
+    #splash-screen.hide {
         opacity: 0;
         pointer-events: none;
     }
 
-    .splash-container.remove {
+    #splash-screen.remove {
         display: none !important;
-    }
-
-    /* Content Wrapper */
-    .splash-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 3rem;
-    }
-
-    /* Logos Area */
-    .logos-wrapper {
-        display: flex;
-        align-items: stretch;
-        justify-content: center;
-        gap: 3rem;
-    }
-
-    .logo-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1.25rem;
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    .logo-img {
-        width: 100px;
-        height: 100px;
-        object-fit: contain;
-    }
-
-    .logo-text {
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        text-align: center;
-        line-height: 1.5;
-        font-weight: 800;
-    }
-
-    /* Separator */
-    .separator-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 2px;
-    }
-
-    .separator-line {
-        width: 1px;
-        height: 0;
-        background-color: #c9a84c;
-        opacity: 0.6;
-    }
-
-    /* Tagline */
-    .tagline {
-        font-size: 0.75rem;
-        letter-spacing: 0.25em;
-        opacity: 0;
-        text-transform: uppercase;
-        color: rgba(201, 168, 76, 0.7);
-        margin-top: 1rem;
-        font-weight: 600;
-    }
-
-    /* Progress Bar */
-    .progress-bar-container {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 3px;
-        background-color: rgba(201, 168, 76, 0.15);
-    }
-
-    .progress-bar {
-        height: 100%;
-        width: 0%;
-        background-color: #c9a84c;
     }
 
     /* ANIMATIONS */
     /* 1. Separator Line */
-    .splash-container.animating .separator-line {
+    #splash-screen.animating .separator-line {
         animation: growLine 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         animation-delay: 0.3s;
     }
@@ -172,7 +92,7 @@ import duLogo from "../assets/imagotipo_du_black.png";
     }
 
     /* 2. Logos */
-    .splash-container.animating .logo-container {
+    #splash-screen.animating .logo-container {
         animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         animation-delay: 0.9s;
     }
@@ -189,7 +109,7 @@ import duLogo from "../assets/imagotipo_du_black.png";
     }
 
     /* 3. Tagline */
-    .splash-container.animating .tagline {
+    #splash-screen.animating .tagline {
         animation: fadeIn 1s ease-out forwards;
         animation-delay: 1.6s;
     }
@@ -204,7 +124,7 @@ import duLogo from "../assets/imagotipo_du_black.png";
     }
 
     /* 4. Progress Bar */
-    .splash-container.animating .progress-bar {
+    #splash-screen.animating .progress-bar {
         animation: loadProgress 5.5s linear forwards; /* Animates smoothly along the 5s visible time */
     }
 
@@ -214,24 +134,6 @@ import duLogo from "../assets/imagotipo_du_black.png";
         }
         100% {
             width: 100%;
-        }
-    }
-
-    @media (max-width: 640px) {
-        .logos-wrapper {
-            gap: 1.5rem;
-        }
-        .logo-img {
-            width: 70px;
-            height: 70px;
-        }
-        .logo-text {
-            font-size: 0.6rem;
-        }
-        .tagline {
-            font-size: 0.6rem;
-            text-align: center;
-            padding: 0 1rem;
         }
     }
 </style>

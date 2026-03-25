@@ -1,0 +1,235 @@
+---
+import dependencies from "../data/dependencies.json";
+import VideoPanel from "./VideoPanel.astro";
+import InfoPanel from "./InfoPanel.astro";
+---
+
+<div
+    class="relative min-h-screen pt-[30px] bg-[#f0f1f5] text-primary overflow-hidden font-body selection:bg-secondary selection:text-white flex flex-col"
+>
+    <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div
+            class="absolute top-10 left-10 w-64 h-64 border-2 border-primary/5 animate-float-slow"
+        >
+        </div>
+        <div
+            class="absolute bottom-20 right-20 w-96 h-96 border border-secondary/10 animate-float-slower"
+        >
+        </div>
+    </div>
+
+    <main
+        class="w-full mx-auto px-1 lg:px-12 py-6 lg:py-10 relative z-10 grow flex flex-col justify-center transition-opacity duration-500 ease-in-out opacity-0"
+        id="main-container"
+    >
+        <div
+            class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-5 lg:gap-8 h-full items-stretch"
+        >
+            <VideoPanel videoUrl={dependencies[0].video} />
+            <InfoPanel dependencies={dependencies} />
+        </div>
+    </main>
+</div>
+
+<script define:vars={{ dependencies }}>
+    document.addEventListener("DOMContentLoaded", () => {
+        const mainContainer = document.getElementById("main-container");
+        const leftPanel = document.getElementById("left-panel");
+        const rightPanel = document.getElementById("right-panel");
+
+        // Elementos del DOM a actualizar
+        const titleEl = document.getElementById("dep-title");
+        const logoEl = document.getElementById("dep-logo");
+        const indicatorEl = document.getElementById("nav-indicator");
+        const videoEl = document.getElementById("dep-video");
+        const emailEl = document.getElementById("dep-email");
+        const addressEl = document.getElementById("dep-address");
+        const phoneEl = document.getElementById("dep-phone");
+        const extensionEl = document.getElementById("dep-extension");
+        const responsibleEl = document.getElementById("dep-responsible");
+        const roleEl = document.getElementById("dep-role");
+        const imageEl = document.getElementById("dep-image");
+        const locationTextEl = document.getElementById("dep-location-text");
+        const dots = document.querySelectorAll("[data-dot]");
+
+        // Botones de navegación
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+
+        let currentIndex = 0;
+
+        // Initial Fade In
+        setTimeout(() => {
+            if (mainContainer) mainContainer.classList.remove("opacity-0");
+            if (leftPanel) leftPanel.classList.add("animate-slide-in-left");
+            if (rightPanel) rightPanel.classList.add("animate-slide-in-right");
+        }, 100);
+
+        const updateUI = (index) => {
+            const data = dependencies[index];
+
+            // 1. Animación de salida (Fade Out suave)
+            if (leftPanel) leftPanel.classList.add("opacity-50");
+            if (rightPanel) rightPanel.classList.add("opacity-50");
+
+            setTimeout(() => {
+                // 2. Actualizar Datos
+
+                // Toggle logo o título
+                if (data.logo) {
+                    if (logoEl) {
+                        logoEl.src = data.logo;
+                        logoEl.alt = data.title;
+                        logoEl.classList.remove("hidden");
+                    }
+                    if (titleEl) titleEl.classList.add("hidden");
+                } else {
+                    if (logoEl) logoEl.classList.add("hidden");
+                    if (titleEl) {
+                        titleEl.textContent = data.title;
+                        titleEl.classList.remove("hidden");
+                    }
+                }
+
+                if (indicatorEl)
+                    indicatorEl.textContent = `${index + 1}/${dependencies.length} ${data.title}`;
+
+                if (videoEl && data.video) {
+                    try {
+                        const videoUrl = new URL(data.video);
+                        videoUrl.searchParams.set("autoplay", "1");
+                        videoUrl.searchParams.set("mute", "1");
+                        videoEl.src = videoUrl.toString();
+                    } catch (e) {
+                        videoEl.src = `${data.video}?autoplay=1&mute=1`;
+                    }
+                }
+
+                if (emailEl) {
+                    emailEl.textContent = data.contact.email;
+                    emailEl.href = `mailto:${data.contact.email}`;
+                }
+                if (addressEl) addressEl.textContent = data.contact.address;
+                if (phoneEl) phoneEl.textContent = data.contact.phone;
+                if (extensionEl)
+                    extensionEl.textContent = data.contact.phoneExtension;
+                if (responsibleEl)
+                    responsibleEl.textContent = data.contact.responsible;
+                if (roleEl) roleEl.textContent = data.contact.responsibleRole;
+                if (imageEl) imageEl.src = data.image;
+                if (locationTextEl)
+                    locationTextEl.textContent = data.locationText;
+
+                dots.forEach((dot, i) => {
+                    if (i === index) {
+                        // Activamos la barrita
+                        dot.classList.add("bg-white");
+                        dot.classList.remove(
+                            "bg-transparent",
+                            "border",
+                            "border-gray-400",
+                        );
+                    } else {
+                        // Desactivamos las otras
+                        dot.classList.remove("bg-white");
+                        dot.classList.add(
+                            "bg-transparent",
+                            "border",
+                            "border-gray-400",
+                        );
+                    }
+                });
+
+                // Emitir evento para actualizar redes sociales
+                const event = new CustomEvent("updateSocialMedia", {
+                    detail: { networks: data.socialMedia || [] },
+                });
+                document.dispatchEvent(event);
+
+                // 3. Animación de entrada
+                if (leftPanel) leftPanel.classList.remove("opacity-50");
+                if (rightPanel) rightPanel.classList.remove("opacity-50");
+            }, 250);
+        };
+
+        // Event Listeners para navegación
+        if (prevBtn) {
+            prevBtn.addEventListener("click", () => {
+                currentIndex =
+                    currentIndex === 0
+                        ? dependencies.length - 1
+                        : currentIndex - 1;
+                updateUI(currentIndex);
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener("click", () => {
+                currentIndex =
+                    currentIndex === dependencies.length - 1
+                        ? 0
+                        : currentIndex + 1;
+                updateUI(currentIndex);
+            });
+        }
+    });
+</script>
+
+<style>
+    /* Custom Animations */
+    @keyframes float-slow {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+    @keyframes float-slower {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-15px);
+        }
+    }
+
+    .animate-float-slow {
+        animation: float-slow 8s ease-in-out infinite;
+    }
+    .animate-float-slower {
+        animation: float-slower 12s ease-in-out infinite;
+    }
+
+    /* Slide Animations */
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .animate-slide-in-left {
+        animation: slideInLeft 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+    .animate-slide-in-right {
+        animation: slideInRight 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+</style>

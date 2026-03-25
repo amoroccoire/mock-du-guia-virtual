@@ -1,0 +1,98 @@
+{
+    "id": "directorio",
+    "title": "DIRECTORIO INSTITUCIONAL",
+    "isDirectory": true,
+    "categories": [
+        {
+            "name": "RECTORADO Y VICERRECTORADOS",
+            "items": [
+                {
+                    "name": "Vicerrectorado Académico",
+                    "contacts": [
+                        {
+                            "label": "Atención al Estudiante",
+                            "emails": [
+                                "vac@unsa.edu.pe",
+                                "consultas_vac@unsa.edu.pe"
+                            ],
+                            "phones": [
+                                "987654321",
+                                "912345678"
+                            ],
+                            "extension": "1234"
+                        },
+                        {
+                            "label": "Mesa de Partes",
+                            "emails": [
+                                "mp_vac@unsa.edu.pe"
+                            ],
+                            "phones": [
+                                "(054) 237859"
+                            ]
+                        }
+                    ],
+                    "socialMedia": [
+                        {
+                            "audience": "General",
+                            "networks": [
+                                {
+                                    "name": "facebook",
+                                    "url": "https://facebook.com/vacunsa"
+                                },
+                                {
+                                    "name": "twitter",
+                                    "url": "https://twitter.com/vacunsa"
+                                }
+                            ]
+                        }
+                    ],
+                    "responsible": "Dr. Luis Cuadros Paz",
+                    "role": "Vicerrector Académico"
+                }
+            ]
+        },
+        {
+            "name": "FACULTAD DE INGENIERÍA DE PROCESOS",
+            "items": [
+                {
+                    "name": "Escuela de Ingeniería Química",
+                    "contacts": [
+                        {
+                            "label": "Trámites Académicos",
+                            "emails": [
+                                "iquimica@unsa.edu.pe"
+                            ],
+                            "phones": [
+                                "955443322"
+                            ]
+                        }
+                    ],
+                    "socialMedia": [
+                        {
+                            "audience": "Estudiantes",
+                            "networks": [
+                                {
+                                    "name": "facebook",
+                                    "url": "https://facebook.com/iq_unsa"
+                                },
+                                {
+                                    "name": "instagram",
+                                    "url": "https://instagram.com/iq_unsa"
+                                }
+                            ]
+                        },
+                        {
+                            "audience": "Egresados",
+                            "networks": [
+                                {
+                                    "name": "facebook",
+                                    "url": "https://facebook.com/redegresados_iq"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
