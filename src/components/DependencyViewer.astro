@@ -1,7 +1,9 @@
 ---
-import dependencies from "../data/dependencies.json";
+import { getOficinas } from "../lib/data";
 import VideoPanel from "./VideoPanel.astro";
-import InfoPanel from "./InfoPanel.astro";
+import InfoPanel from "./infoPanel/InfoPanel.astro";
+
+const dependencies = await getOficinas();
 ---
 
 <div
@@ -32,97 +34,315 @@ import InfoPanel from "./InfoPanel.astro";
 </div>
 
 <script define:vars={{ dependencies }}>
+    const SOCIAL_ICONS = {
+        facebook: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
+        instagram: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>`,
+        twitter: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+        youtube: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon fill="white" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>`,
+        linkedin: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>`,
+        tiktok: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>`,
+        web: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+    };
+
+    function getSocialIcon(nombre) {
+        const key = nombre.toLowerCase();
+        for (const [k, v] of Object.entries(SOCIAL_ICONS)) {
+            if (key.includes(k)) return v;
+        }
+        return SOCIAL_ICONS.web;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Constructores de HTML para el accordion (runtime JS, sin Astro:assets)
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    function buildCarouselHTML(images) {
+        if (!images || images.length === 0) return "";
+        const items = images
+            .map(
+                (src, i) => `
+        <div class="snap-start flex-shrink-0 w-24 h-16 rounded-sm overflow-hidden bg-white/5">
+            <img
+                src="/${src}"
+                alt="Imagen ${i + 1}"
+                loading="lazy"
+                class="w-full h-full object-cover"
+                onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-white/20 text-xs\\'>Sin img</div>'"
+            />
+        </div>
+    `,
+            )
+            .join("");
+
+        return `
+        <div class="pt-1">
+            <p class="text-white/40 text-[10px] uppercase tracking-wider mb-1.5">Galería</p>
+            <div class="flex gap-2 overflow-x-auto snap-x snap-mandatory pb-1" style="scrollbar-width:none">
+                ${items}
+            </div>
+        </div>
+    `;
+    }
+
+    function buildRedesHTML(redes) {
+        if (!redes || redes.length === 0) return "";
+        const links = redes
+            .map(
+                (r) => `
+        <a href="${r.url}" target="_blank" rel="noopener noreferrer" title="${r.nombre}"
+           class="h-7 w-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-secondary hover:text-white text-white/70 transition-all duration-200 hover:scale-110">
+            <span class="h-3.5 w-3.5">${getSocialIcon(r.nombre)}</span>
+        </a>
+    `,
+            )
+            .join("");
+        return `<div class="flex flex-wrap gap-2 pt-1">${links}</div>`;
+    }
+
+    function buildTelefonosHTML(telefonos) {
+        if (!telefonos || telefonos.length === 0) return "";
+        const links = telefonos
+            .map(
+                (tel) => `
+        <a href="tel:${tel.replace(/\s/g, "")}" class="text-white/80 text-xs hover:text-secondary transition-colors block">${tel}</a>
+    `,
+            )
+            .join("");
+        return `
+        <div class="flex items-start gap-2">
+            <svg class="h-3.5 w-3.5 text-secondary flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.06 6.06l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            <div class="flex flex-col gap-0.5">${links}</div>
+        </div>
+    `;
+    }
+
+    function buildPerfilContentHTML(perfil) {
+        const responsable = perfil.responsableArea
+            ? `
+        <div class="flex items-start gap-2">
+            <svg class="h-3.5 w-3.5 text-secondary flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="text-white/80 text-xs leading-tight">${perfil.responsableArea}</span>
+        </div>
+    `
+            : "";
+
+        const ubicacion = perfil.ubicacion
+            ? `
+        <div class="flex items-start gap-2">
+            <svg class="h-3.5 w-3.5 text-secondary flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span class="text-white/80 text-xs leading-tight">${perfil.ubicacion}</span>
+        </div>
+    `
+            : "";
+
+        return `
+        <div class="px-3 py-3 space-y-3 bg-black/20">
+            ${responsable}
+            ${buildTelefonosHTML(perfil.telefonos)}
+            ${ubicacion}
+            ${buildRedesHTML(perfil.redes)}
+            ${buildCarouselHTML(perfil.images)}
+        </div>
+    `;
+    }
+
+    function buildAccordionHTML(perfiles) {
+        return perfiles
+            .map((perfil, index) => {
+                const label =
+                    perfil.audiencia || perfil.subArea || `Perfil ${index + 1}`;
+                const subLabel =
+                    perfil.subArea && perfil.audiencia
+                        ? `<span class="text-white/50 text-[10px] truncate mt-0.5">${perfil.subArea}</span>`
+                        : "";
+                const isFirst = index === 0;
+
+                return `
+            <div class="accordion-item border border-white/20 rounded-sm overflow-hidden ${isFirst ? "" : ""}" data-index="${index}" ${isFirst ? 'data-open=""' : ""}>
+                <button
+                    class="accordion-trigger w-full flex items-center justify-between px-3 py-2.5 text-left bg-white/5 hover:bg-white/10 transition-colors duration-200"
+                    aria-expanded="${isFirst}"
+                    data-accordion-btn
+                >
+                    <div class="flex flex-col min-w-0">
+                        <span class="text-white text-xs font-bold uppercase tracking-wider leading-tight truncate">${label}</span>
+                        ${subLabel}
+                    </div>
+                    <svg class="accordion-chevron h-4 w-4 text-white/60 flex-shrink-0 ml-2 transition-transform duration-300 ${isFirst ? "rotate-180" : ""}"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div class="accordion-content overflow-hidden transition-all duration-300 ease-in-out"
+                     style="max-height: ${isFirst ? "1000px" : "0"};">
+                    ${buildPerfilContentHTML(perfil)}
+                </div>
+            </div>
+        `;
+            })
+            .join("");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Lógica de accordion para contenido generado dinámicamente
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    function initAccordion(container) {
+        const items = container.querySelectorAll(".accordion-item");
+        items.forEach((item) => {
+            const btn = item.querySelector("[data-accordion-btn]");
+            const content = item.querySelector(".accordion-content");
+            if (!btn || !content) return;
+
+            btn.addEventListener("click", () => {
+                const isOpen = "open" in item.dataset;
+
+                // Cerrar todos
+                items.forEach((other) => {
+                    const c = other.querySelector(".accordion-content");
+                    const b = other.querySelector("[data-accordion-btn]");
+                    const ch = other.querySelector(".accordion-chevron");
+                    if (c) c.style.maxHeight = "0";
+                    delete other.dataset.open;
+                    b?.setAttribute("aria-expanded", "false");
+                    ch?.classList.remove("rotate-180");
+                });
+
+                // Abrir el clickeado si estaba cerrado
+                if (!isOpen) {
+                    item.dataset.open = "";
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    btn.setAttribute("aria-expanded", "true");
+                    item.querySelector(".accordion-chevron")?.classList.add(
+                        "rotate-180",
+                    );
+                }
+            });
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         const mainContainer = document.getElementById("main-container");
         const leftPanel = document.getElementById("left-panel");
         const rightPanel = document.getElementById("right-panel");
-
-        // Elementos del DOM a actualizar
         const titleEl = document.getElementById("dep-title");
-        const logoEl = document.getElementById("dep-logo");
+        const logoWrapper = document.getElementById("dep-logo-wrapper");
         const indicatorEl = document.getElementById("nav-indicator");
         const videoEl = document.getElementById("dep-video");
         const emailEl = document.getElementById("dep-email");
-        const addressEl = document.getElementById("dep-address");
-        const phoneEl = document.getElementById("dep-phone");
-        const extensionEl = document.getElementById("dep-extension");
         const responsibleEl = document.getElementById("dep-responsible");
         const roleEl = document.getElementById("dep-role");
-        const imageEl = document.getElementById("dep-image");
-        const locationTextEl = document.getElementById("dep-location-text");
+        const accordionWrapper = document.getElementById("accordion-wrapper");
         const dots = document.querySelectorAll("[data-dot]");
-
-        // Botones de navegación
         const prevBtn = document.getElementById("prev-btn");
         const nextBtn = document.getElementById("next-btn");
 
         let currentIndex = 0;
 
-        // Initial Fade In
+        // Fade-in inicial
         setTimeout(() => {
-            if (mainContainer) mainContainer.classList.remove("opacity-0");
-            if (leftPanel) leftPanel.classList.add("animate-slide-in-left");
-            if (rightPanel) rightPanel.classList.add("animate-slide-in-right");
+            mainContainer?.classList.remove("opacity-0");
+            leftPanel?.classList.add("animate-slide-in-left");
+            rightPanel?.classList.add("animate-slide-in-right");
         }, 100);
+
+        // Inicializar accordion del estado inicial
+        const initialAccordion = document.getElementById("profiles-accordion");
+        if (initialAccordion) initAccordion(initialAccordion);
 
         const updateUI = (index) => {
             const data = dependencies[index];
 
-            // 1. Animación de salida (Fade Out suave)
-            if (leftPanel) leftPanel.classList.add("opacity-50");
-            if (rightPanel) rightPanel.classList.add("opacity-50");
+            // Fade out
+            leftPanel?.classList.add("opacity-50");
+            rightPanel?.classList.add("opacity-50");
 
             setTimeout(() => {
-                // 2. Actualizar Datos
-
-                // Toggle logo o título
-                if (data.logo) {
-                    if (logoEl) {
-                        logoEl.src = data.logo;
-                        logoEl.alt = data.title;
-                        logoEl.classList.remove("hidden");
-                    }
-                    if (titleEl) titleEl.classList.add("hidden");
+                // ── Logo / Título ──────────────────────────────────────────
+                const logoSrc = data.perfiles[0]?.logo ?? "";
+                if (logoSrc && logoWrapper) {
+                    logoWrapper.classList.remove("hidden");
+                    logoWrapper.className =
+                        "bg-white/5 p-2 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.15)] backdrop-blur-sm border border-white/10";
+                    logoWrapper.innerHTML = `
+                    <img
+                        src="/oficinasImagotipo/${logoSrc}"
+                        alt="${data.titulo}"
+                        class="h-[70px] md:h-[90px] object-contain max-w-[80%] mx-auto"
+                        onerror="this.style.display='none'"
+                    />
+                `;
+                    titleEl?.classList.add("hidden");
                 } else {
-                    if (logoEl) logoEl.classList.add("hidden");
+                    logoWrapper?.classList.add("hidden");
                     if (titleEl) {
-                        titleEl.textContent = data.title;
+                        titleEl.textContent = data.titulo;
                         titleEl.classList.remove("hidden");
                     }
                 }
 
+                // ── Indicador de navegación ────────────────────────────────
                 if (indicatorEl)
-                    indicatorEl.textContent = `${index + 1}/${dependencies.length} ${data.title}`;
+                    indicatorEl.textContent = `${index + 1}/${dependencies.length} ${data.titulo}`;
 
+                // ── Video ─────────────────────────────────────────────────
                 if (videoEl && data.video) {
                     try {
-                        const videoUrl = new URL(data.video);
-                        videoUrl.searchParams.set("autoplay", "1");
-                        videoUrl.searchParams.set("mute", "1");
-                        videoEl.src = videoUrl.toString();
-                    } catch (e) {
+                        const url = new URL(data.video);
+                        url.searchParams.set("autoplay", "1");
+                        url.searchParams.set("mute", "1");
+                        videoEl.src = url.toString();
+                    } catch {
                         videoEl.src = `${data.video}?autoplay=1&mute=1`;
                     }
                 }
 
-                if (emailEl) {
-                    emailEl.textContent = data.contact.email;
-                    emailEl.href = `mailto:${data.contact.email}`;
-                }
-                if (addressEl) addressEl.textContent = data.contact.address;
-                if (phoneEl) phoneEl.textContent = data.contact.phone;
-                if (extensionEl)
-                    extensionEl.textContent = data.contact.phoneExtension;
+                // ── Datos de cabecera ──────────────────────────────────────
                 if (responsibleEl)
-                    responsibleEl.textContent = data.contact.responsible;
-                if (roleEl) roleEl.textContent = data.contact.responsibleRole;
-                if (imageEl) imageEl.src = data.image;
-                if (locationTextEl)
-                    locationTextEl.textContent = data.locationText;
+                    responsibleEl.textContent = data.responsableGral;
+                if (roleEl) roleEl.textContent = data.cargoGral;
+                if (emailEl) {
+                    emailEl.textContent = data.emailGral;
+                    emailEl.href = `mailto:${data.emailGral}`;
+                }
 
+                // ── Accordion de perfiles ──────────────────────────────────
+                if (accordionWrapper) {
+                    // Reconstruir solo el acordeón, conservar el label
+                    let container =
+                        accordionWrapper.querySelector(".accordion-list");
+                    if (!container) {
+                        // Fallback: buscar por ID
+                        container = accordionWrapper.querySelector(
+                            "#profiles-accordion",
+                        );
+                    }
+
+                    const newAccordionHTML = `
+                    <p class="text-white/40 text-[10px] uppercase tracking-widest mb-2">
+                        Perfiles / Audiencias
+                    </p>
+                    <div class="accordion-list flex flex-col gap-2" id="profiles-accordion">
+                        ${buildAccordionHTML(data.perfiles)}
+                    </div>
+                `;
+                    accordionWrapper.innerHTML = newAccordionHTML;
+
+                    const newAccordion = accordionWrapper.querySelector(
+                        "#profiles-accordion",
+                    );
+                    if (newAccordion) initAccordion(newAccordion);
+                }
+
+                // ── Progress dots ─────────────────────────────────────────
                 dots.forEach((dot, i) => {
                     if (i === index) {
-                        // Activamos la barrita
                         dot.classList.add("bg-white");
                         dot.classList.remove(
                             "bg-transparent",
@@ -130,7 +350,6 @@ import InfoPanel from "./InfoPanel.astro";
                             "border-gray-400",
                         );
                     } else {
-                        // Desactivamos las otras
                         dot.classList.remove("bg-white");
                         dot.classList.add(
                             "bg-transparent",
@@ -140,38 +359,24 @@ import InfoPanel from "./InfoPanel.astro";
                     }
                 });
 
-                // Emitir evento para actualizar redes sociales
-                const event = new CustomEvent("updateSocialMedia", {
-                    detail: { networks: data.socialMedia || [] },
-                });
-                document.dispatchEvent(event);
-
-                // 3. Animación de entrada
-                if (leftPanel) leftPanel.classList.remove("opacity-50");
-                if (rightPanel) rightPanel.classList.remove("opacity-50");
+                // Fade in
+                leftPanel?.classList.remove("opacity-50");
+                rightPanel?.classList.remove("opacity-50");
             }, 250);
         };
 
-        // Event Listeners para navegación
-        if (prevBtn) {
-            prevBtn.addEventListener("click", () => {
-                currentIndex =
-                    currentIndex === 0
-                        ? dependencies.length - 1
-                        : currentIndex - 1;
-                updateUI(currentIndex);
-            });
-        }
+        // ── Navegación ────────────────────────────────────────────────────────────
+        prevBtn?.addEventListener("click", () => {
+            currentIndex =
+                currentIndex === 0 ? dependencies.length - 1 : currentIndex - 1;
+            updateUI(currentIndex);
+        });
 
-        if (nextBtn) {
-            nextBtn.addEventListener("click", () => {
-                currentIndex =
-                    currentIndex === dependencies.length - 1
-                        ? 0
-                        : currentIndex + 1;
-                updateUI(currentIndex);
-            });
-        }
+        nextBtn?.addEventListener("click", () => {
+            currentIndex =
+                currentIndex === dependencies.length - 1 ? 0 : currentIndex + 1;
+            updateUI(currentIndex);
+        });
     });
 </script>
 

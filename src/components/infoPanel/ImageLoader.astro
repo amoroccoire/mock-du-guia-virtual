@@ -1,0 +1,58 @@
+---
+interface Props {
+    src: string; // ruta relativa a src/assets/ (ej: "logos/orci.png")
+    alt: string;
+    class?: string;
+    width?: number;
+    height?: number;
+    loading?: "lazy" | "eager";
+}
+
+const {
+    src,
+    alt,
+    class: className = "",
+    width,
+    height,
+    loading = "lazy",
+} = Astro.props;
+
+// 1. Pre-carga en build-time todas las imágenes bajo src/assets/
+//    La clave del objeto es la ruta relativa desde src/assets/ (ej: "/logos/orci.png")
+const allImages = import.meta.glob<{ default: ImageMetadata }>(
+    "/src/assets/oficinasImagotipo/*.{png,jpg,jpeg,webp,svg,avif,gif}",
+);
+
+// 2. Construir la clave que usa Vite/Astro: siempre empieza con /src/assets/
+//const key = `/src/assets/oficinasImagotipo/${src}`;
+
+// 3. Resolver la imagen (si existe)
+//const imageModule = allImages[key] ? await allImages[key]() : null;
+//const resolvedImage = imageModule?.default ?? null;
+
+// 4. ¿Tiene dimensiones explícitas o las inferimos de la imagen?
+//const hasExplicitDimensions = width !== undefined && height !== undefined;
+
+const publicSrc = `/oficinasImagotipo/${src}`;
+---
+
+{
+    publicSrc ? (
+        <img
+            src={publicSrc}
+            alt={alt}
+            width={width}
+            height={height}
+            loading={loading}
+            class={className}
+            onerror="this.parentElement.innerHTML='<div class=\'flex items-center justify-center bg-white/10 text-white/40 text-[10px] p-2 text-center\'>Imagen no encontrada</div>'"
+        />
+    ) : (
+        /* Tu Placeholder original por si ni siquiera llega el nombre del archivo */
+        <div
+            class={`flex items-center justify-center bg-white/10 text-white/40 text-xs font-mono rounded-sm ${className}`}
+        >
+            <span class="px-2 text-center leading-tight opacity-60">{alt}</span>
+        </div>
+    )
+}
